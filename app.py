@@ -1,4 +1,3 @@
-
 import streamlit as st
 import joblib
 import pandas as pd
@@ -11,11 +10,6 @@ st.set_page_config(page_title="Crop & Fertilizer Recommender", layout="centered"
 st.title("🌱 Crop & Fertilizer Recommendation System")
 
 tab1, tab2 = st.tabs(["🌾 Crop Recommendation", "💊 Fertilizer Recommendation"])
-
-# If predictions are numeric (0, 1, 2...)
-crop_labels = ["rice", "wheat", "maize", ...]  # List all crops in order
-predicted_crop = crop_labels[prediction[0]]  # Get crop name
-st.success(f"✅ Recommended Crop: **{predicted_crop.capitalize()}**")
 
 with tab1:
     st.header("Crop Recommendation")
@@ -30,17 +24,24 @@ with tab1:
     if st.button("🔍 Recommend Crop"):
         input_data = pd.DataFrame([[N, P, K, temperature, humidity, ph, rainfall]],
                                   columns=["N", "P", "K", "temperature", "humidity", "ph", "rainfall"])
-        prediction = crop_model.predict(input_data)
-        st.success(f"✅ Recommended Crop: **{str(prediction[0]).capitalize()}**")
+        try:
+            prediction = crop_model.predict(input_data)
+            st.success(f"✅ Recommended Crop: **{str(prediction[0]).capitalize()}**")
+        except Exception as e:
+            st.error(f"🚨 Error: {e}")
 
 with tab2:
     st.header("Fertilizer Recommendation")
-    crop_name = st.text_input("Crop Name", "rice")
+    crop_options = ["rice", "wheat", "maize", "sugarcane", "cotton", "millets", "barley"]
+    crop_name = st.selectbox("Select Crop", crop_options)
     N = st.slider("Nitrogen Level (N)", 0, 140, 50, key="fn")
     P = st.slider("Phosphorus Level (P)", 5, 145, 50, key="fp")
     K = st.slider("Potassium Level (K)", 5, 205, 50, key="fk")
 
     if st.button("🔍 Recommend Fertilizer"):
         input_data = pd.DataFrame([[crop_name, N, P, K]], columns=["Crop", "N", "P", "K"])
-        prediction = fertilizer_model.predict(input_data)
-        st.success(f"✅ Recommended Fertilizer: **{prediction[0]}**")
+        try:
+            prediction = fertilizer_model.predict(input_data)
+            st.success(f"✅ Recommended Fertilizer: **{prediction[0]}**")
+        except Exception as e:
+            st.error(f"🚨 Error: {e}")
