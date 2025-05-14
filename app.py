@@ -3,34 +3,8 @@ import joblib
 import pandas as pd
 
 # Load models
-crop_model = joblib.load("crop_model.pkl")
-fertilizer_model = joblib.load("fertilizer_model.pkl")
-
-# Crop dictionary (ID to name)
-crop_dict = {
-    1: "rice",
-    2: "maize",
-    3: "chickpea",
-    4: "kidneybeans",
-    5: "pigeonpeas",
-    6: "mothbeans",
-    7: "mungbean",
-    8: "blackgram",
-    9: "lentil",
-    10: "pomegranate",
-    11: "banana",
-    12: "mango",
-    13: "grapes",
-    14: "watermelon",
-    15: "muskmelon",
-    16: "apple",
-    17: "orange",
-    18: "papaya",
-    19: "coconut",
-    20: "cotton",
-    21: "jute",
-    22: "coffee"
-}
+crop_model = joblib.load("crop_model.pkl")  # Load your trained crop model
+label_encoder = joblib.load("label_encoder.pkl")  # Load the label encoder
 
 st.set_page_config(page_title="Crop & Fertilizer Recommender", layout="centered")
 st.title("🌱 Crop & Fertilizer Recommendation System")
@@ -39,7 +13,6 @@ tab1, tab2 = st.tabs(["🌾 Crop Recommendation", "💊 Fertilizer Recommendatio
 
 with tab1:
     st.header("Crop Recommendation")
-
     N = st.slider("Nitrogen (N)", 0, 140, 50)
     P = st.slider("Phosphorus (P)", 5, 145, 50)
     K = st.slider("Potassium (K)", 5, 205, 50)
@@ -51,29 +24,28 @@ with tab1:
     if st.button("🔍 Recommend Crop"):
         input_data = pd.DataFrame([[N, P, K, temperature, humidity, ph, rainfall]],
                                   columns=["N", "P", "K", "temperature", "humidity", "ph", "rainfall"])
-        st.write("📥 Input Data:", input_data)
+
         try:
             prediction = crop_model.predict(input_data)
-            predicted_class = int(prediction[0])
-            predicted_crop = crop_dict.get(predicted_class, "Unknown")
+            predicted_class = prediction[0]
+            predicted_crop = label_encoder.inverse_transform([predicted_class])[0]  # Get the crop name
+
             st.success(f"✅ Recommended Crop: **{predicted_crop.capitalize()}**")
         except Exception as e:
-            st.error(f"🚨 Error during prediction: {e}")
+            st.error(f"🚨 Error: {e}")
 
 with tab2:
     st.header("Fertilizer Recommendation")
-
     crop_options = ["rice", "wheat", "maize", "sugarcane", "cotton", "millets", "barley"]
     crop_name = st.selectbox("Select Crop", crop_options)
-    fn = st.slider("Nitrogen Level (N)", 0, 140, 50, key="fn")
-    fp = st.slider("Phosphorus Level (P)", 5, 145, 50, key="fp")
-    fk = st.slider("Potassium Level (K)", 5, 205, 50, key="fk")
+    N = st.slider("Nitrogen Level (N)", 0, 140, 50, key="fn")
+    P = st.slider("Phosphorus Level (P)", 5, 145, 50, key="fp")
+    K = st.slider("Potassium Level (K)", 5, 205, 50, key="fk")
 
     if st.button("🔍 Recommend Fertilizer"):
-        input_data = pd.DataFrame([[crop_name, fn, fp, fk]], columns=["Crop", "N", "P", "K"])
-        st.write("📥 Input Data:", input_data)
+        input_data = pd.DataFrame([[crop_name, N, P, K]], columns=["Crop", "N", "P", "K"])
         try:
             prediction = fertilizer_model.predict(input_data)
             st.success(f"✅ Recommended Fertilizer: **{prediction[0]}**")
         except Exception as e:
-            st.error(f"🚨 Error during prediction: {e}")
+            st.error(f"🚨 Error: {e}")
