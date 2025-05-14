@@ -10,22 +10,6 @@ st.set_page_config(page_title="Crop & Fertilizer Recommender", layout="centered"
 st.title("🌱 Crop & Fertilizer Recommendation System")
 
 tab1, tab2 = st.tabs(["🌾 Crop Recommendation", "💊 Fertilizer Recommendation"])
-if st.button("🔍 Recommend Crop"):
-    input_data = pd.DataFrame([[N, P, K, temperature, humidity, ph, rainfall]],
-                              columns=["N", "P", "K", "temperature", "humidity", "ph", "rainfall"])
-    prediction = crop_model.predict(input_data)
-
-    # List of crops in order of their number in crop_dict
-    crop_labels = [
-        "rice", "maize", "chickpea", "kidneybeans", "pigeonpeas", "mothbeans", "mungbean", "blackgram", "lentil",
-        "pomegranate", "banana", "mango", "grapes", "watermelon", "muskmelon", "apple", "orange", "papaya",
-        "coconut", "cotton", "jute", "coffee"
-    ]
-
-    # Adjust for 1-based index from model
-    predicted_crop = crop_labels[prediction[0] - 1]
-    st.success(f"✅ Recommended Crop: **{predicted_crop.capitalize()}**")
-
 
 with tab1:
     st.header("Crop Recommendation")
@@ -42,7 +26,16 @@ with tab1:
                                   columns=["N", "P", "K", "temperature", "humidity", "ph", "rainfall"])
         try:
             prediction = crop_model.predict(input_data)
-            st.success(f"✅ Recommended Crop: **{str(prediction[0]).capitalize()}**")
+
+            # Correct crop list (1-based index from model)
+            crop_labels = [
+                "rice", "maize", "chickpea", "kidneybeans", "pigeonpeas", "mothbeans", "mungbean", "blackgram",
+                "lentil", "pomegranate", "banana", "mango", "grapes", "watermelon", "muskmelon", "apple",
+                "orange", "papaya", "coconut", "cotton", "jute", "coffee"
+            ]
+
+            predicted_crop = crop_labels[prediction[0] - 1]  # -1 because list is 0-indexed
+            st.success(f"✅ Recommended Crop: **{predicted_crop.capitalize()}**")
         except Exception as e:
             st.error(f"🚨 Error: {e}")
 
