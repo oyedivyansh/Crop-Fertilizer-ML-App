@@ -26,7 +26,7 @@ with tab1:
         input_data = pd.DataFrame([[N, P, K, temperature, humidity, ph, rainfall]],
                                   columns=["N", "P", "K", "temperature", "humidity", "ph", "rainfall"])
         prediction = crop_model.predict(input_data)
-        st.success(f"✅ Recommended Crop: **{str(prediction[0]).capitalize()}**")
+        st.success(f"✅ Recommended Crop: **{prediction[0].capitalize()}**")
 
 with tab2:
     st.header("Fertilizer Recommendation")
