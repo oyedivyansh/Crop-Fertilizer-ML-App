@@ -12,6 +12,11 @@ st.title("🌱 Crop & Fertilizer Recommendation System")
 
 tab1, tab2 = st.tabs(["🌾 Crop Recommendation", "💊 Fertilizer Recommendation"])
 
+# If predictions are numeric (0, 1, 2...)
+crop_labels = ["rice", "wheat", "maize", ...]  # List all crops in order
+predicted_crop = crop_labels[prediction[0]]  # Get crop name
+st.success(f"✅ Recommended Crop: **{predicted_crop.capitalize()}**")
+
 with tab1:
     st.header("Crop Recommendation")
     N = st.slider("Nitrogen (N)", 0, 140, 50)
